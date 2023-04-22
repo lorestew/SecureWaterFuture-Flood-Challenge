@@ -12,41 +12,56 @@ import seaborn as sns
 #import IPython
 #import IPython.display
 
+#def load_data(data):
+
 
 location = "file:///Users/Derpy/Documents/SecureWaterFuture/SWFdata/BearCreek_precipitation.csv"
 PClocation = "file://" + "/Documents/Repositories/SecureWaterFuture/SWFdata/BearCreek_precipitation.csv"
-
 data = pd.read_csv(    #reading csv file to pandas
-    PClocation,
+    location,
 )
-print(type(data))
 
-print(len(data['Var1']))
+data.isna().sum()
+data = data.dropna()
 
 flood = []
 for i in range(len(data['Var1'])):
-    if(data['prdaily'][i] > 13.0):
+    if(data['prdaily'][i] > 12.0):
         flood.append(1)
         print(data['Var1'][i])
     else:
         flood.append(0)
-
-
-
+data['flood'] = flood
 
 print(data.describe().transpose()) #statistics
-
 
 
 train_data = data.sample(frac=.8, random_state=0)
 test_data = data.drop(train_data.index)
 
 
-
 sns.pairplot(
-    train_data[['Var1', 'prdaily']], 
+    train_data[['Var1', 'prdaily', 'flood']], 
     diag_kind='kde')
 plt.show()
+
+train_data.describe().transpose()
+
+train_features = train_data.copy()
+test_features = test_data.copy()
+
+train_labels = train_features.pop('flood')
+test_labels = test_features.pop('flood')
+
+train_data.describe().transpose()[['mean', 'std']]
+
+normalizer = tf.keras.layers.Normalization(axis=-1)
+normalizer.adapt(np.array(train_features))
+
+print(normalizer.mean.numpy())
+
+
+
 
 
 
