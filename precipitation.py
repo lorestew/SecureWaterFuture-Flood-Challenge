@@ -2,6 +2,8 @@ import os
 import datetime
 
 import tensorflow as tf
+from tensorflow import keras
+
 import numpy as np
 import pandas as pd
 
@@ -17,9 +19,7 @@ import seaborn as sns
 
 location = "file:///Users/Derpy/Documents/SecureWaterFuture/SWFdata/BearCreek_precipitation.csv"
 PClocation = "file://" + "/Documents/Repositories/SecureWaterFuture/SWFdata/BearCreek_precipitation.csv"
-data = pd.read_csv(    #reading csv file to pandas
-    location,
-)
+data = pd.read_csv(PClocation)
 
 data.isna().sum()
 data = data.dropna()
@@ -33,12 +33,8 @@ for i in range(len(data['Var1'])):
         flood.append(0)
 data['flood'] = flood
 
-print(data.describe().transpose()) #statistics
-
-
 train_data = data.sample(frac=.8, random_state=0)
 test_data = data.drop(train_data.index)
-
 
 sns.pairplot(
     train_data[['Var1', 'prdaily', 'flood']], 
@@ -55,10 +51,10 @@ test_labels = test_features.pop('flood')
 
 train_data.describe().transpose()[['mean', 'std']]
 
-normalizer = tf.keras.layers.Normalization(axis=-1)
-normalizer.adapt(np.array(train_features))
+train_features = np.asarray(train_features['prdaily']).astype(np.float32)
 
-print(normalizer.mean.numpy())
+normalizer = tf.keras.layers.Normalization(axis = -1)
+normalizer.adapt(np.array(train_features))
 
 
 
