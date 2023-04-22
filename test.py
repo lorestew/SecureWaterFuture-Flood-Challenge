@@ -52,19 +52,3 @@ plt.ylabel('Variable 2_2')
 plt.show()
 
 
-day = 24*60*60
-year = (365.2425)*day
-
-timestamp_s = dates.map(pd.Timestamp.timestamp)
-train['Day sin'] = np.sin(timestamp_s * (2 * np.pi / day))
-train['Day cos'] = np.cos(timestamp_s * (2 * np.pi / day))
-train['Year sin'] = np.sin(timestamp_s * (2 * np.pi / year))
-train['Year cos'] = np.cos(timestamp_s * (2 * np.pi / year))
-
-plt.plot(np.array(train['Day sin'])[:25])
-plt.plot(np.array(train['Day cos'])[:25])
-plt.xlabel('Time [h]')
-plt.title('Time of day signal')
-
-
-
