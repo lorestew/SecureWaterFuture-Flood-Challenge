@@ -21,78 +21,43 @@ location = "file:///Users/Derpy/Documents/SecureWaterFuture/SWFdata/BearCreek_pr
 PClocation = "file://" + "/Documents/Repositories/SecureWaterFuture/SWFdata/BearCreek_precipitation.csv"
 data = pd.read_csv(PClocation)
 
-data.isna().sum()
-data = data.dropna()
+#flood = []
+#for i in range(len(data['Var1'])):
+#    if(data['prdaily'][i] > 12.0):
+#        flood.append(1)
+#        print(data['Var1'][i])
+#    else:
+#        flood.append(0)
+#data['flood'] = flood
 
-flood = []
-for i in range(len(data['Var1'])):
-    if(data['prdaily'][i] > 12.0):
-        flood.append(1)
-        print(data['Var1'][i])
-    else:
-        flood.append(0)
-data['flood'] = flood
+data['flood'] = np.where(data['prdaily'] > 12, 1, 0) 
 
-train_data = data.sample(frac=.8, random_state=0)
-test_data = data.drop(train_data.index)
+train = data.sample(frac=0.8, random_state=0)
+test = data.drop(train.index)
 
-sns.pairplot(
-    train_data[['Var1', 'prdaily', 'flood']], 
-    diag_kind='kde')
-plt.show()
+print(len(train))
+print(len(test))
 
-train_data.describe().transpose()
+def create_dataset(data, shuffle=True, batch_size=32):
+    df = data.copy()
+    label = df.pop('flood')
 
-train_features = train_data.copy()
-test_features = test_data.copy()
-
-train_labels = train_features.pop('flood')
-test_labels = test_features.pop('flood')
-
-train_data.describe().transpose()[['mean', 'std']]
-
-train_features = np.asarray(train_features['prdaily']).astype(np.float32)
-
-normalizer = tf.keras.layers.Normalization(axis = -1)
-normalizer.adapt(np.array(train_features))
+    df = {key: value[:,tf.newaxis] for key, value in data.items()}
+    ds = tf.data.Dataset.from_tensor_slices((dict(df), label))
+    if shuffle:
+        ds = ds.shuffle(buffer_size=len(data))
+        ds = ds.batch(batch_size)
+        ds = ds.prefetch(batch_size)
+        return ds
+    
+batch_size = 5
+#train_ds = create_dataset(train, batch_size=batch_size)
+#train['prdaily'] = np.asarray(train['prdaily']).astype(np.float32)
 
 
+train_ds = tf.convert_to_tensor(train['prdaily'], dtype=tf.float32)
+train_ds = tf.convert_to_tensor(train)
 
-
-
-
-
-
-
-
-#column_indices = {name: i for i, name in enumerate(data.columns)}
-#
-#
-#n = len(data)
-#train_data = data[0:int(n*.7)]
-#val_data = data[int(n*.7):int(n*.9)]
-#test_data = data[int(n*.9):]
-#
-#num_features = data.shape[1]
-#
-#
-#train_mean = train_data.mean()
-#train_std = train_data.std()
-#
-##normalizing data
-#train_data = (train_data - train_mean) / train_std
-#val_data = (val_data - train_mean) / train_std
-#test_data = (test_data - train_mean) / train_std
-#
-#data_std = (data - train_mean) / train_std
-#data_std = data_std.melt(var_name='Column', value_name='Normalized')
-#plt.figure(figsize=(12, 6))
-#ax = sns.violinplot(x='Column', y='Normalized', data=data_std)
-#_ = ax.set_xticklabels(data.keys(), rotation=90)
-#plt.show()
-
-
-
-
+    
 
 
