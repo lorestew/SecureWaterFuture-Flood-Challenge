@@ -50,5 +50,3 @@ plt.colorbar()
 plt.xlabel('Variable 2_1')
 plt.ylabel('Variable 2_2')
 plt.show()
-
-

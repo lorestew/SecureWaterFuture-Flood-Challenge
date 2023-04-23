@@ -56,7 +56,6 @@ batch_size = 5
 
 
 train_ds = tf.convert_to_tensor(train['prdaily'], dtype=tf.float32)
-train_ds = tf.convert_to_tensor(train)
 
     
 
