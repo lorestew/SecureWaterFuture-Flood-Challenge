@@ -19,7 +19,7 @@ import seaborn as sns
 
 location = "file:///Users/Derpy/Documents/SecureWaterFuture/SWFdata/BearCreek_precipitation.csv"
 PClocation = "file://" + "/Documents/Repositories/SecureWaterFuture/SWFdata/BearCreek_precipitation.csv"
-data = pd.read_csv(PClocation)
+data = pd.read_csv(location)
 
 #flood = []
 #for i in range(len(data['Var1'])):
